@@ -1,1 +1,65 @@
-[{"name":"\u6570\u636e\u5e93\u4f18\u5316","slug":"db-optimizer","description":"\u4f18\u5316WordPress\u6570\u636e\u5e93\uff0c\u63d0\u9ad8\u7f51\u7ad9\u6027\u80fd\u3002\u6e05\u7406\u65e0\u7528\u6570\u636e\uff0c\u4f18\u5316\u6570\u636e\u8868\u7ed3\u6784\u3002","version":"1.0.0","author":"test","category":"\u5de5\u5177","download_url":"http:\/\/47.121.122.246:8556\/hello-world.zip"},{"name":"\u5b89\u5168\u52a0\u56fa","slug":"security-enhance","description":"\u589e\u5f3aWordPress\u7ad9\u70b9\u5b89\u5168\u6027\uff0c\u9632\u5fa1\u5e38\u89c1\u653b\u51fb\uff0c\u4fdd\u62a4\u7f51\u7ad9\u6570\u636e\u5b89\u5168\u3002","version":"1.0.1","author":"test","category":"\u5b89\u5168\u9632\u62a4","download_url":"http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/security-enhance.zip"},{"name":"\u968f\u673a\u53e5\u5b50","slug":"random-quotes","description":"\u5728\u7ba1\u7406\u9875\u9762\u9876\u90e8\u663e\u793a\u968f\u673a\u53e5\u5b50\uff0c\u4e3a\u60a8\u63d0\u4f9b\u7075\u611f\u548c\u52a8\u529b","version":"1.0.0","author":"test","category":"\u5de5\u5177","download_url":"http:\/\/47.121.122.246:8556\/random-quotes.zip"},{"name":"\u7f13\u5b58\u52a0\u901f","slug":"cache-booster","description":"\u5b9e\u73b0WordPress\u9875\u9762\u7f13\u5b58\uff0c\u663e\u8457\u63d0\u9ad8\u7f51\u7ad9\u52a0\u8f7d\u901f\u5ea6\uff0c\u51cf\u8f7b\u670d\u52a1\u5668\u8d1f\u62c5\u3002","version":"1.1.0","author":"test","category":"\u6027\u80fd\u4f18\u5316","download_url":"http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/cache-booster.zip"},{"name":"\u5907\u4efd\u6062\u590d","slug":"backup-restore","description":"\u81ea\u52a8\u5907\u4efdWordPress\u6570\u636e\u5e93\u548c\u6587\u4ef6\uff0c\u652f\u6301\u4e00\u952e\u6062\u590d\uff0c\u786e\u4fdd\u6570\u636e\u5b89\u5168\u3002","version":"1.0.2","author":"test","category":"\u5b89\u5168\u9632\u62a4","download_url":"http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/backup-restore.zip"},{"name":"\u56fe\u50cf\u4f18\u5316","slug":"image-optimizer","description":"\u81ea\u52a8\u538b\u7f29\u548c\u4f18\u5316\u56fe\u7247\uff0c\u51cf\u5c11\u52a0\u8f7d\u65f6\u95f4\uff0c\u8282\u7701\u5b58\u50a8\u7a7a\u95f4\u3002","version":"1.0.0","author":"test","category":"\u6027\u80fd\u4f18\u5316","download_url":"http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/image-optimizer.zip"},{"name":"\u5e02\u573aAPI","slug":"market-api","description":"\u6a21\u5757\u5e02\u573a\u540e\u7aef","version":"1.0.0","author":"test","category":"\u5b9a\u5236\u5f00\u53d1","download_url":"http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/module-name.zip"}]
+[
+    {
+        "name": "数据库优化",
+        "slug": "db-optimizer",
+        "description": "优化WordPress数据库，提高网站性能。清理无用数据，优化数据表结构。",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "工具",
+        "download_url": "http:\/\/47.121.122.246:8556\/hello-world.zip"
+    },
+    {
+        "name": "安全加固",
+        "slug": "security-enhance",
+        "description": "增强WordPress站点安全性，防御常见攻击，保护网站数据安全。",
+        "version": "1.0.1",
+        "author": "test",
+        "category": "安全防护",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/security-enhance.zip"
+    },
+    {
+        "name": "随机句子",
+        "slug": "random-quotes",
+        "description": "在管理页面顶部显示随机句子，为您提供灵感和动力",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "工具",
+        "download_url": "http:\/\/47.121.122.246:8556\/random-quotes.zip"
+    },
+    {
+        "name": "缓存加速",
+        "slug": "cache-booster",
+        "description": "实现WordPress页面缓存，显著提高网站加载速度，减轻服务器负担。",
+        "version": "1.1.0",
+        "author": "test",
+        "category": "性能优化",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/cache-booster.zip"
+    },
+    {
+        "name": "备份恢复",
+        "slug": "backup-restore",
+        "description": "自动备份WordPress数据库和文件，支持一键恢复，确保数据安全。",
+        "version": "1.0.2",
+        "author": "test",
+        "category": "安全防护",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/backup-restore.zip"
+    },
+    {
+        "name": "图像优化",
+        "slug": "image-optimizer",
+        "description": "自动压缩和优化图片，减少加载时间，节省存储空间。",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "性能优化",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/image-optimizer.zip"
+    },
+    {
+        "name": "市场API",
+        "slug": "market-api",
+        "description": "模块市场后端",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "定制开发",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/module-name.zip"
+    }
+]
