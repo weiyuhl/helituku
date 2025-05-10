@@ -54,9 +54,9 @@
         "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/image-optimizer.zip"
     },
     {
-        "name": "1282市场API",
+        "name": "市场API",
         "slug": "market-api",
-        "description": "模块市场后1端",
+        "description": "模块市场后端",
         "version": "1.0.0",
         "author": "test",
         "category": "定制开发",
