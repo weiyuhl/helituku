@@ -1,0 +1,65 @@
+[
+    {
+        "name": "数据库优化",
+        "slug": "db-optimizer",
+        "description": "优化WordPress数据库，提高网站性能。清理无用数据，优化数据表结构。",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "工具",
+        "download_url": "http:\/\/47.121.122.246:8556\/hello-world.zip"
+    },
+    {
+        "name": "安全加固",
+        "slug": "security-enhance",
+        "description": "增强WordPress站点安全性，防御常见攻击，保护网站数据安全。",
+        "version": "1.0.1",
+        "author": "test",
+        "category": "安全防护",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/security-enhance.zip"
+    },
+    {
+        "name": "随机句子",
+        "slug": "random-quotes",
+        "description": "在管理页面顶部显示随机句子，为您提供灵感和动力",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "工具",
+        "download_url": "http:\/\/47.121.122.246:8556\/random-quotes.zip"
+    },
+    {
+        "name": "缓存加速",
+        "slug": "cache-booster",
+        "description": "实现WordPress页面缓存，显著提高网站加载速度，减轻服务器负担。",
+        "version": "1.1.0",
+        "author": "test",
+        "category": "性能优化",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/cache-booster.zip"
+    },
+    {
+        "name": "备份恢复",
+        "slug": "backup-restore",
+        "description": "自动备份WordPress数据库和文件，支持一键恢复，确保数据安全。",
+        "version": "1.0.2",
+        "author": "test",
+        "category": "安全防护",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/backup-restore.zip"
+    },
+    {
+        "name": "图像优化",
+        "slug": "image-optimizer",
+        "description": "自动压缩和优化图片，减少加载时间，节省存储空间。",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "性能优化",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/image-optimizer.zip"
+    },
+    {
+        "name": "市场API",
+        "slug": "market-api",
+        "description": "模块市场后端",
+        "version": "1.0.0",
+        "author": "test",
+        "category": "定制开发",
+        "download_url": "http:\/\/47.121.122.246:8556\/wp-content\/plugins\/module-market-api\/modules\/module-name.zip"
+    }
+]
