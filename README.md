@@ -2,7 +2,7 @@
 
 ## 执行摘要
 
-本报告面向一款“最新、完整的 Android 手机端 Agent 应用”的工程设计：应用采用 **MVVM + 多模块**，UI 使用 **Jetpack Compose**，核心能力部分由 **Rust + Mozilla UniFFI** 提供，且需要集成多种工具能力，并包含面向工具执行的 **Linux 沙盒运行环境**。基于当前 Android 官方架构建议，推荐采用**分层架构 + 纵向功能模块 + 横向核心基础设施模块**的组织方式：至少保持 **UI 层** 与 **Data 层** 明确分离，按需增加 **Domain/UseCase 层**；UI 层通过状态持有者（通常是 `ViewModel`）驱动 Compose，遵循**单向数据流**与**单一事实来源**；Data 层以 **Repository** 作为唯一入口，不允许 UI 或 UseCase 直接依赖底层 data source。多模块化方面，应避免“按技术栈切得过碎”与“单体 feature 模块过胖”这两种极端，建议使用“**core/platform/native/sandbox 横向模块** + **feature 垂直切片模块**”的混合模式。citeturn44search1turn44search2turn44search3turn44search4turn44search6
+本报告面向一款“最新、完整的 Android 手机端 Agent 应用”的工程设计：应用采用 **MVVM + 多模块**，UI 使用 **Jetpack Compose**，核心能力部分由 **Rust + Mozilla UniFFI** 提供，且需要集成多种工具能力，并包含面向工具执行的 **Linux 沙盒运行环境**。基于当前 Android 官方架构建议，推荐采用**分层架构 + 纵向功能模块 + 横向核心基础设施模块**的组织方式：至少保持 **UI 层** 与 **Data 层** 明确分离，按需增加 **Domain/UseCase 层**；UI 层通过状态持有者（通常是 `ViewModel`）驱动 Compose，遵循**单向数据流**与**单一事实来源**；Data 层以 **Repository** 作为唯一入口，不允许 UI 或 UseCase 直接依赖底层 data source。多模块化方面，应避免“按技术栈切得过碎”与“单体 feature 模块过胖”这两种极端，建议使用“**core/platform/native/sandbox 横向模块** + **feature 垂直切片模块**”的混合模式。
 
 在技术选型上，当前 Android 官方文档建议 Compose-first，且当前稳定的 Compose BOM 为 **2026.06.00**；Activity Compose 已到 **1.13.0**，Lifecycle 到 **2.11.0**，Navigation Compose 到 **2.9.8**，同时 **Navigation 3 1.1.3** 已进入稳定通道，适合强 Compose-first 的新项目评估。数据层建议默认采用 **Room 2.8.4 + DataStore 1.2.1**；后台与可靠任务调度建议用 **WorkManager 2.11.2**；安全与密钥保护建议以 **Android Keystore/Jetpack Security** 为基础；DI 首选 **Dagger/Hilt 2.59.2 + androidx.hilt 1.3.0**。工具链方面，AGP 当前稳定补丁可落到 **9.2.1**，其兼容矩阵对应 **Gradle 9.4.1、JDK 17、默认 NDK 28.2**。Kotlin 官方当前稳定版为 **2.4.0**，但由于 **KSP** 与部分注解处理链经常滞后于 Kotlin 主版本，生产上应把“当前最新稳定”与“当前最稳落地组合”区分开来管理。
 对 **Rust + UniFFI**，本报告的结论是：在 Android 上，**Rust 负责“高价值、可复用、性能/安全敏感”的核心引擎**，例如 Agent orchestration core、工具协议适配、规则引擎、会话压缩、计划执行图、沙盒命令规范化等；**Kotlin 负责 Android 生命周期、权限、系统 API、通知、WorkManager、前台服务、UI、导航与本地存储接入**。UniFFI 非常适合将 Rust 逻辑暴露给 Kotlin：它官方支持 Kotlin，支持 async 到 Kotlin `suspend` 的映射，支持 records/enums/errors/custom types/external types，但它**只负责生成绑定，不负责帮你完成平台构建与分发**；同时，Kotlin 侧对 Rust 暴露对象的生命周期回收通常仍应显式 `close()`，不能假设 JVM GC 会自动可靠清理底层 Rust 资源。
@@ -15,19 +15,19 @@
 
 你已明确说明以下事项均为**未指定**：**最低 SDK、目标 API 级别、支持 CPU 架构、是否上 Play Store、是否需要离线模型推理、是否需要端侧 ML 加速**。本报告保留这些状态，并给出工程上更稳妥的默认建议。citeturn36search17turn36search7turn25search2
 
-建议把“当前最新稳定版本”与“当前生产锁定版本”分开管理。原因很现实：Android 生态中的 **AGP / Kotlin / KSP / Hilt / Room / Compose Compiler** 并不总是同步发布；即使单个组件“最新稳定”，也不意味着整个组合是**最快稳态**。例如 AGP 9.2.1 已稳定，Kotlin 2.4.0 已是官方当前稳定版，但 KSP 的版本线与 Kotlin 主版本常常需要单独校验；因此应在版本目录中同时维护 `latestStable` 与 `prodLocked` 两组锚点。citeturn9search0turn9search1turn4view0turn42search0turn42search6
+建议把“当前最新稳定版本”与“当前生产锁定版本”分开管理。原因很现实：Android 生态中的 **AGP / Kotlin / KSP / Hilt / Room / Compose Compiler** 并不总是同步发布；即使单个组件“最新稳定”，也不意味着整个组合是**最快稳态**。例如 AGP 9.2.1 已稳定，Kotlin 2.4.0 已是官方当前稳定版，但 KSP 的版本线与 Kotlin 主版本常常需要单独校验；因此应在版本目录中同时维护 `latestStable` 与 `prodLocked` 两组锚点。
 
 ### 推荐的默认约束
 
-如果没有进一步业务约束，建议把 **minSdk 默认建议值设为 26**，**targetSdk/compileSdk 跟随当前发布平台**，并以 **arm64-v8a** 作为生产必选 ABI；`armeabi-v7a` 仅在明确存在 32 位用户群时再保留，`x86_64` 主要用于模拟器与 CI 测试。这样做的原因是：现代 Jetpack 组件已经越来越偏向较新的 API 基线，例如 WorkManager 2.11 已把 `minSdk` 提升到 23，Room 2.8 也提升到了 23；而 Android NDK 与 Rust 官方 Android targets 对 `aarch64-linux-android` 支持最好，移动端真实用户也早已以 64 位 ARM 为主。这里的 `minSdk 26` 属于架构建议，而不是官方硬性要求；若你追求更广覆盖，也可以退到 23，但要为后台限制、权限分流、文件访问差异付出额外复杂度。citeturn39search0turn40search0turn32search0turn36search7
+如果没有进一步业务约束，建议把 **minSdk 默认建议值设为 26**，**targetSdk/compileSdk 跟随当前发布平台**，并以 **arm64-v8a** 作为生产必选 ABI；`armeabi-v7a` 仅在明确存在 32 位用户群时再保留，`x86_64` 主要用于模拟器与 CI 测试。这样做的原因是：现代 Jetpack 组件已经越来越偏向较新的 API 基线，例如 WorkManager 2.11 已把 `minSdk` 提升到 23，Room 2.8 也提升到了 23；而 Android NDK 与 Rust 官方 Android targets 对 `aarch64-linux-android` 支持最好，移动端真实用户也早已以 64 位 ARM 为主。这里的 `minSdk 26` 属于架构建议，而不是官方硬性要求；若你追求更广覆盖，也可以退到 23，但要为后台限制、权限分流、文件访问差异付出额外复杂度。
 
-如果**计划上架 Google Play**，应一开始就按 **Android App Bundle + Play App Signing + 动态功能模块按需交付** 的发布模型设计，且沙盒/工具插件能力不能依赖“从自家服务器下载可执行代码”这一路径；如果**不走 Play、而走企业或私有分发**，则可以适度放宽对本地 Linux 用户态与工具包分发的设计约束，但仍建议保留签名、版本回滚保护、原生符号管理与审计日志。citeturn36search15turn36search1turn37search0turn25search2turn36search8
+如果**计划上架 Google Play**，应一开始就按 **Android App Bundle + Play App Signing + 动态功能模块按需交付** 的发布模型设计，且沙盒/工具插件能力不能依赖“从自家服务器下载可执行代码”这一路径；如果**不走 Play、而走企业或私有分发**，则可以适度放宽对本地 Linux 用户态与工具包分发的设计约束，但仍建议保留签名、版本回滚保护、原生符号管理与审计日志。
 
 ## 推荐项目结构与模块边界
 
 ### 推荐的目录树
 
-下面给出一个适合此类 Agent 应用的**推荐多模块目录树**。它采用“**根工程基础设施** + **core 横向基础模块** + **platform/os 适配层** + **feature 垂直能力切片** + **native/rust** + **sandbox 隔离执行** + **质量与发布模块**”的结构。这样的组织方式与 Android 官方“推荐分层 + 多模块化”思路一致，同时便于 Rust 组件、沙盒组件和 Feature Delivery 并行演进。citeturn44search4turn44search7turn44search6
+下面给出一个适合此类 Agent 应用的**推荐多模块目录树**。它采用“**根工程基础设施** + **core 横向基础模块** + **platform/os 适配层** + **feature 垂直能力切片** + **native/rust** + **sandbox 隔离执行** + **质量与发布模块**”的结构。这样的组织方式与 Android 官方“推荐分层 + 多模块化”思路一致，同时便于 Rust 组件、沙盒组件和 Feature Delivery 并行演进。
 
 ```text
 root
@@ -134,7 +134,7 @@ root
 | `:sandbox:protocol` | 执行协议层 | JSON/Proto schema、序列化边界、versioned protocol | `core:common`、`rust` 协议 crate | 版本必须可演进 |
 | `:baselineprofile` / `:benchmark` | 质量层 | 启动性能、关键路径优化、基准测试 | `app`、Macrobenchmark/ProfileInstaller | 不参与生产业务逻辑 |
 
-上述划分遵循两个关键边界：其一，**所有数据访问必须经 Repository**；其二，**feature 之间只通过 `api` 对接，不互相依赖 `impl`**。这与 Android 官方将 Repository 作为 data layer 入口、以及多模块工程鼓励使用清晰模块边界的建议一致。citeturn44search3turn44search4turn44search7
+上述划分遵循两个关键边界：其一，**所有数据访问必须经 Repository**；其二，**feature 之间只通过 `api` 对接，不互相依赖 `impl`**。这与 Android 官方将 Repository 作为 data layer 入口、以及多模块工程鼓励使用清晰模块边界的建议一致。
 
 ## 分层架构与运行时流程
 
@@ -168,46 +168,46 @@ flowchart TD
 
 ### 各层职责说明
 
-这张图对应 Android 官方推荐的典型架构：**UI 层**负责展示与事件采集，**Data 层**负责应用数据与业务逻辑，**Domain 层**是可选的中间层，用于封装复杂或可复用业务规则。对你的 Agent 场景而言，Domain 层并不只是“可选”，而是**强烈建议存在**，因为 Agent orchestration、工具路由、计划分解、上下文裁剪、重试策略、权限策略、执行预算等逻辑，既复杂，又往往跨多个 ViewModel 复用。citeturn44search1turn44search0turn44search6
+这张图对应 Android 官方推荐的典型架构：**UI 层**负责展示与事件采集，**Data 层**负责应用数据与业务逻辑，**Domain 层**是可选的中间层，用于封装复杂或可复用业务规则。对你的 Agent 场景而言，Domain 层并不只是“可选”，而是**强烈建议存在**，因为 Agent orchestration、工具路由、计划分解、上下文裁剪、重试策略、权限策略、执行预算等逻辑，既复杂，又往往跨多个 ViewModel 复用。
 
-**UI 层（Compose）**只关心渲染当前 `UiState` 和发送用户事件，不直接访问 data source，也不直接处理底层 OS 或 FFI 细节。Compose 是 Android 官方推荐的 UI 工具包；UI 层应使用 UDF，把事件交给状态持有者，由 ViewModel 产出 `StateFlow`/`SnapshotState` 等可观察状态。这样既利于预览和测试，也便于以后拆出动态功能模块。citeturn44search2turn44search5turn44search9
+**UI 层（Compose）**只关心渲染当前 `UiState` 和发送用户事件，不直接访问 data source，也不直接处理底层 OS 或 FFI 细节。Compose 是 Android 官方推荐的 UI 工具包；UI 层应使用 UDF，把事件交给状态持有者，由 ViewModel 产出 `StateFlow`/`SnapshotState` 等可观察状态。这样既利于预览和测试，也便于以后拆出动态功能模块。
 
-**ViewModel / State Holder 层**负责状态生产管线：接收 UI 事件，触发 UseCase 或 Repository，折叠为稳定的 `UiState`。官方指导明确区分“事件”与“状态”，并强调状态生产应遵循单向数据流。你的 Agent 应用建议把“用户输入事件、系统回调事件、工具执行事件、模型流式输出事件、沙盒回传事件”统一抽象为 state reducer 的输入，从而避免“Compose 页面直接拼业务流程”的失控写法。citeturn44search5turn44search9
+**ViewModel / State Holder 层**负责状态生产管线：接收 UI 事件，触发 UseCase 或 Repository，折叠为稳定的 `UiState`。官方指导明确区分“事件”与“状态”，并强调状态生产应遵循单向数据流。你的 Agent 应用建议把“用户输入事件、系统回调事件、工具执行事件、模型流式输出事件、沙盒回传事件”统一抽象为 state reducer 的输入，从而避免“Compose 页面直接拼业务流程”的失控写法。
 
-**Domain/UseCase 层**建议至少包含：会话发送用例、工具发现用例、工具调用仲裁用例、Agent 计划执行用例、上下文压缩用例、沙盒会话管理用例、权限/能力策略用例。Android 官方指出，Domain 层适合承载复杂逻辑、复用逻辑与提升测试性；你的场景正符合这个条件。UseCase 应尽量细粒度、单职责、无内部可变状态。citeturn44search0turn44search6
+**Domain/UseCase 层**建议至少包含：会话发送用例、工具发现用例、工具调用仲裁用例、Agent 计划执行用例、上下文压缩用例、沙盒会话管理用例、权限/能力策略用例。Android 官方指出，Domain 层适合承载复杂逻辑、复用逻辑与提升测试性；你的场景正符合这个条件。UseCase 应尽量细粒度、单职责、无内部可变状态。
 
-**Data/Repository 层**负责汇聚网络、本地数据库、偏好存储、文件系统与原生引擎结果。Repository 是唯一入口，负责冲突解决、缓存一致性和源抽象；无论是聊天历史、工具目录、执行会话、用户配置还是模型/工具后端连接信息，都应通过 Repository 暴露，而不是让 ViewModel 直接拿 DAO、HTTP service 或 JNI/FFI 句柄。citeturn44search3turn44search6
+**Data/Repository 层**负责汇聚网络、本地数据库、偏好存储、文件系统与原生引擎结果。Repository 是唯一入口，负责冲突解决、缓存一致性和源抽象；无论是聊天历史、工具目录、执行会话、用户配置还是模型/工具后端连接信息，都应通过 Repository 暴露，而不是让 ViewModel 直接拿 DAO、HTTP service 或 JNI/FFI 句柄。
 
-**Native 层（Rust/UniFFI）**的职责应限定为：高强度状态机、协议处理、执行图/计划器、内容解析、压缩/加密、工具协议统一、WASM/脚本运行时封装、以及与沙盒协议共享的纯业务逻辑。不要把 Android `Context`、权限请求、通知渠道、URI 权限、一切生命周期相关逻辑塞进 Rust；这些应由 Kotlin 的 Platform/OS 层来完成，然后通过接口或 callback/foreign trait 回传给 Rust。UniFFI 正适合这种“Rust 核心 + Kotlin 平台壳”的边界划分。citeturn33search1turn33search5turn34search2
+**Native 层（Rust/UniFFI）**的职责应限定为：高强度状态机、协议处理、执行图/计划器、内容解析、压缩/加密、工具协议统一、WASM/脚本运行时封装、以及与沙盒协议共享的纯业务逻辑。不要把 Android `Context`、权限请求、通知渠道、URI 权限、一切生命周期相关逻辑塞进 Rust；这些应由 Kotlin 的 Platform/OS 层来完成，然后通过接口或 callback/foreign trait 回传给 Rust。UniFFI 正适合这种“Rust 核心 + Kotlin 平台壳”的边界划分。
 
-**Sandbox/容器层**不建议成为 UI 或 Feature 的直接依赖。正确方式是：Feature 触发 Domain 用例，Domain 使用 `SandboxFacade` 发起执行请求，`sandbox:service` 在隔离进程中执行、记录审计、限制资源，并把结构化结果经 IPC 返回。这样才能避免“页面直接持有进程/服务句柄”，也更符合后续替换执行后端的需要。citeturn22view0turn21search1
+**Sandbox/容器层**不建议成为 UI 或 Feature 的直接依赖。正确方式是：Feature 触发 Domain 用例，Domain 使用 `SandboxFacade` 发起执行请求，`sandbox:service` 在隔离进程中执行、记录审计、限制资源，并把结构化结果经 IPC 返回。这样才能避免“页面直接持有进程/服务句柄”，也更符合后续替换执行后端的需要。
 
 ## 核心技术组件与版本建议
 
 ### 版本表
 
-下表把“**当前已查证的稳定版本**”与“**生产落地建议**”分开写，目的是降低升级链断裂的风险。对大多数 Android 项目而言，真正要追求的是“**整套组合稳定**”，而不是“每个组件都取到自己最新”。citeturn9search0turn4view0turn42search0
+下表把“**当前已查证的稳定版本**”与“**生产落地建议**”分开写，目的是降低升级链断裂的风险。对大多数 Android 项目而言，真正要追求的是“**整套组合稳定**”，而不是“每个组件都取到自己最新”。
 
 | 组件 | 当前已查证稳定版本 | 生产落地建议 | 替代选项 | 说明 |
 |---|---:|---|---|---|
-| JDK | 17 | 17 | 21 仅在工具链完全验证后使用 | AGP 9.2 兼容矩阵要求/默认 JDK 17。citeturn9search0 |
-| Android Gradle Plugin | 9.2.1 | 9.2.1 | 9.1.1 保守回退 | 9.2.0 页面已列出 9.2.1 修复；Android Studio 同步发布 9.2.1。citeturn9search0turn9search1 |
-| Gradle | 9.4.1 | 9.4.1 | 按 AGP 兼容矩阵下调 | AGP 9.2 默认/最低为 9.4.1。citeturn9search0 |
-| Kotlin | 2.4.0 | 若 KSP 链未就绪，可先锁 2.3.21 分支 | 2.3.21 | Kotlin 官方当前稳定版为 2.4.0；但 Compose 编译插件与 KSP 要跟矩阵走。citeturn4view0turn11view0turn42search0 |
-| Compose Compiler Gradle Plugin | 与 Kotlin 同版 | 与 Kotlin 精确对齐 | — | 官方文档明确该插件版本与 Kotlin 版本匹配。citeturn11view0 |
-| Compose BOM | 2026.06.00 | 2026.06.00 | 2026.04.01 | 官方文档要求“始终使用最新 BOM”；当前文档示例为 2026.06.00。citeturn11view0 |
-| Compose Core | BOM 对应 1.11.x 稳定线 | 跟随 BOM | 直接手工锁定子库版本 | 2026.04 稳定版引入 Compose 1.11；稳定通道已到 1.11.3。citeturn10search3turn10search11turn39search8 |
-| Activity Compose | 1.13.0 | 1.13.0 | — | 官方稳定版。citeturn12search4turn11view0 |
-| Lifecycle | 2.11.0 | 2.11.0 | — | 官方稳定版，含 Compose scoped ViewModelStore 改进。citeturn17search4 |
-| Navigation Compose | 2.9.8 | 2.9.8 | Navigation 3 1.1.3 | 2.9.8 是成熟默认；Navigation 3 已稳定，建议 greenfield 评估。citeturn17search7turn39search8 |
-| Coroutines / Flow | 1.11.0 | 1.11.0，但需做 Kotlin 版本兼容验收 | — | 当前最新稳定为 1.11.0。citeturn16view0 |
-| Dagger / Hilt | 2.59.2 | 2.59.2 | Koin | 2.59 增加 AGP 9 支持，2.59.2 为最新稳定补丁。citeturn41search0turn41search2 |
-| `androidx.hilt` | 1.3.0 | 1.3.0 | 手写 ViewModelFactory | Compose 的 `hiltViewModel()` 已迁到 `hilt-lifecycle-viewmodel-compose`。citeturn20search0turn20search1 |
-| KSP | 2.3.5 | 必须与 Kotlin 分支精确匹配；升级前单独验收 | kapt | 已查证稳定版至少到 2.3.5；KSP 文档主线已出现更高版本占位，说明版本节奏独立。citeturn42search0turn42search6 |
-| Room | 2.8.4 | 2.8.4 | SQLDelight 2.3.2 | 结构化本地存储默认首选，Repository + DAO 生态最成熟。citeturn40search0turn40search8 |
-| DataStore | 1.2.1 | 1.2.1 | MMKV / EncryptedSharedPreferences | 轻量配置、偏好与 flags 首选。citeturn17search1 |
-| WorkManager | 2.11.2 | 2.11.2 | Foreground Service 仅限用户可见长任务 | 可靠后台任务首选；2.11 以后 `minSdk` 为 23。citeturn39search0 |
-| Security Crypto | 1.1.0 | 1.1.0 | 直接用 Android Keystore | 适合加密文件/偏好与密钥管理门面。citeturn13view0turn35search17 |
+| JDK | 17 | 17 | 21 仅在工具链完全验证后使用 | AGP 9.2 兼容矩阵要求/默认 JDK 17。 |
+| Android Gradle Plugin | 9.2.1 | 9.2.1 | 9.1.1 保守回退 | 9.2.0 页面已列出 9.2.1 修复；Android Studio 同步发布 9.2.1。 |
+| Gradle | 9.4.1 | 9.4.1 | 按 AGP 兼容矩阵下调 | AGP 9.2 默认/最低为 9.4.1。 |
+| Kotlin | 2.4.0 | 若 KSP 链未就绪，可先锁 2.3.21 分支 | 2.3.21 | Kotlin 官方当前稳定版为 2.4.0；但 Compose 编译插件与 KSP 要跟矩阵走。 |
+| Compose Compiler Gradle Plugin | 与 Kotlin 同版 | 与 Kotlin 精确对齐 | — | 官方文档明确该插件版本与 Kotlin 版本匹配。 |
+| Compose BOM | 2026.06.00 | 2026.06.00 | 2026.04.01 | 官方文档要求“始终使用最新 BOM”；当前文档示例为 2026.06.00。 |
+| Compose Core | BOM 对应 1.11.x 稳定线 | 跟随 BOM | 直接手工锁定子库版本 | 2026.04 稳定版引入 Compose 1.11；稳定通道已到 1.11.3。 |
+| Activity Compose | 1.13.0 | 1.13.0 | — | 官方稳定版。 |
+| Lifecycle | 2.11.0 | 2.11.0 | — | 官方稳定版，含 Compose scoped ViewModelStore 改进。 |
+| Navigation Compose | 2.9.8 | 2.9.8 | Navigation 3 1.1.3 | 2.9.8 是成熟默认；Navigation 3 已稳定，建议 greenfield 评估。 |
+| Coroutines / Flow | 1.11.0 | 1.11.0，但需做 Kotlin 版本兼容验收 | — | 当前最新稳定为 1.11.0。 |
+| Dagger / Hilt | 2.59.2 | 2.59.2 | Koin | 2.59 增加 AGP 9 支持，2.59.2 为最新稳定补丁。 |
+| `androidx.hilt` | 1.3.0 | 1.3.0 | 手写 ViewModelFactory | Compose 的 `hiltViewModel()` 已迁到 `hilt-lifecycle-viewmodel-compose`。 |
+| KSP | 2.3.5 | 必须与 Kotlin 分支精确匹配；升级前单独验收 | kapt | 已查证稳定版至少到 2.3.5；KSP 文档主线已出现更高版本占位，说明版本节奏独立。 |
+| Room | 2.8.4 | 2.8.4 | SQLDelight 2.3.2 | 结构化本地存储默认首选，Repository + DAO 生态最成熟。 |
+| DataStore | 1.2.1 | 1.2.1 | MMKV / EncryptedSharedPreferences | 轻量配置、偏好与 flags 首选。 |
+| WorkManager | 2.11.2 | 2.11.2 | Foreground Service 仅限用户可见长任务 | 可靠后台任务首选；2.11 以后 `minSdk` 为 23。 |
+| Security Crypto | 1.1.0 | 1.1.0 | 直接用 Android Keystore | 适合加密文件/偏好与密钥管理门面。 |
 | AndroidX Test Runner / Rules | 1.7.0 | 1.7.0 | — | 仪器化测试基础设施。citeturn12search6 |
 | Benchmark / Macrobenchmark | 1.4.1 | 1.4.1 | 仅自建 trace 脚本 | 1.4.1 是更合理的现行稳定线；1.5.x 仍是 alpha。citeturn43search2 |
 | ProfileInstaller | 1.4.1 | 1.4.1 | — | Baseline Profile 落地的稳定搭档。citeturn40search6 |
